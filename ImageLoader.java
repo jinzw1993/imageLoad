@@ -1,5 +1,3 @@
-package com.example.zhiweijin.myapplication.utils;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
