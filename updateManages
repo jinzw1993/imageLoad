@@ -1,0 +1,108 @@
+
+
+/**
+ * Created by Administrator on 2015/8/25 0025.
+ */
+public class VersionUpdate {
+    private String APK_PATH = Environment.getExternalStorageDirectory() + "/lwcg/apk/";
+    private Context mcontext;
+    DialogFragmentUpdate dialogFragmentUpdate;
+    private FragmentManager mFragmentManager;
+
+    public VersionUpdate(Context context, FragmentManager fragmentManager) {
+        mcontext = context;
+        mFragmentManager = fragmentManager;
+    }
+
+    //获取版本号
+    public int getVersionNum(Context context) {
+
+        int version = 0;
+        try {
+            version = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return version;
+    }
+
+    //判断当前是否是最新版本
+    public void AutoUpdate(int VersionCode, String url,String webString) {
+        if (getVersionNum(mcontext) <VersionCode) {
+//进行检查更新
+            CheckUpdate(url,webString);
+        } else {
+
+            Toast.makeText(mcontext, "当前为最新版本", Toast.LENGTH_LONG).show();
+
+        }
+
+    }
+
+    // 安装apk
+    public void installAPK(File file) {
+
+        if (!file.exists()) {
+
+            return;
+
+        }
+        Intent it = new Intent(Intent.ACTION_VIEW);
+        it.setDataAndType(Uri.parse("file://" + file.toString()),
+                "application/vnd.android.package-archive");
+        mcontext.startActivity(it);
+    }
+
+    //检查更新
+    private void CheckUpdate(final String url,String webString) {
+        dialogFragmentUpdate = new DialogFragmentUpdate(new VersionUpdate.IUpdate() {
+            @Override
+            public void onUpdate() {
+                Toast.makeText(mcontext, "开始更新", Toast.LENGTH_SHORT).show();
+
+                if (dialogFragmentUpdate.isVisible()) {
+                    dialogFragmentUpdate.dismiss();
+                }
+                String fName = url.trim();
+                final String fileName = fName.substring(fName.lastIndexOf("/") + 1);
+                File file = new File(APK_PATH, fileName);
+                if (file.exists()) {
+
+                    file.delete();
+                }
+                DownLoadFileDao downfile = new DownLoadFileDaoImpl();
+                DownLoadFileVo downLoadFileVo = new DownLoadFileVo();
+                downLoadFileVo.setName(fileName);
+                downLoadFileVo.setUrl(url);
+                downLoadFileVo.setTarget(APK_PATH + fileName);
+                downfile.downLoadFile(mcontext, downLoadFileVo, new LoadCallBack() {
+                    @Override
+                    public void onLoadSuccess(Object obj) {
+                        File file = new File(APK_PATH, fileName);
+                        installAPK(file);
+                        Log.i("下载了","GO");
+                    }
+
+                    @Override
+                    public void onLoadFail() {
+
+                    }
+
+                    @Override
+                    public void onLoading(int progress) {
+
+                    }
+                });
+
+
+            }
+        },webString);
+
+        dialogFragmentUpdate.show(mFragmentManager, "dad");
+    }
+
+    public interface IUpdate {
+        void onUpdate();
+    }
+
+}
