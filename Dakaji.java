@@ -14,9 +14,9 @@ public class Dakaji {
         Random random = new Random();
         List<PresonBean> personBeans = new ArrayList<PresonBean>();
         boolean[] booleans = new boolean[1000];
-        personBeans.add(new PresonBean("1550511209", "李畅"));
-        personBeans.add(new PresonBean("1550511205", "刘帅辰"));
-        personBeans.add(new PresonBean("1550511209", "李畅"));
+        personBeans.add(new PresonBean("675d0511209", "张三"));
+        
+        
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-mm-dd hh-MM-ss");
         Calendar C = Calendar.getInstance();
         int date = C.get(Calendar.DATE);
